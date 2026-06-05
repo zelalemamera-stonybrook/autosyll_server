@@ -1,6 +1,10 @@
 /* The following program implements a server for handling autosyll.com page, the application code is accessed through this server as a subprocess. Other files in this directory represent important parts of the webpage like 
 * HTML files and images
 */
+import { Amplify } from 'aws-amplify';
+import outputs from '../amplify_outputs.json';
+
+Amplify.configure(outputs);
 
 import { createServer } from 'node:http';
 import fs from 'node:fs';
