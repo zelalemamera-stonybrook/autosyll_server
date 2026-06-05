@@ -4,25 +4,21 @@ The outputs will be stored in a file called syllabified.txt.
 '''
 from pathlib import Path 
 import re
-import subprocess
+import syllabify
 
 def prepare_input():
 	'''
 	reads in the raw user input text and produces a text file with a single word per line.
 	'''
-	try:
-		tokenized = []
-		pathin = Path('user_input.txt');
-		for line in pathin.open(mode='r'):
-			tokenized += tokenize(line)
-		Path.touch('wordlist.txt')
-		pathout = Path('wordlist.txt')
-		for word in tokenized:
-			with pathout.open(mode='a') as f:
-				f.write(f'{word}\n')
-	except(e):
-		print(f'there was an exception {e}')
-	subprocess.run(['python', 'syllabify.py'])
+	tokenized = []
+	pathin = Path('user_input.txt');
+	for line in pathin.open(mode='r'):
+		tokenized += tokenize(line)
+	pathout = Path('wordlist.txt')
+	for word in tokenized:
+		with pathout.open(mode='a') as f:
+			f.write(f'{word}\n')
+	syllabify.main()
 		
 def tokenize(string: str):
 	'''

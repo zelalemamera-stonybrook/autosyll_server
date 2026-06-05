@@ -1,0 +1,89 @@
+
+h1 {
+	text-align: left;
+	background-color: rgb(83, 150, 145);
+	font-style: normal;
+	font-weight: normal;
+	}
+	
+#paragraphs {
+	text-align: left;
+	width: 95%
+	}
+	
+img {
+	width: 25%;
+	height: 25%;
+}
+
+a {
+	font-style: italic;
+	}
+	
+#submit {
+	width: 70px;
+	height: 20px;
+	border-radius:50px 50px 50px 50px;
+	background-color: rgb(8, 131, 201);
+	}
+
+#submit:hover {
+	background-color: rgb(125, 205, 212);
+	}
+
+#formarea{
+	display: inline-block;
+	vertical-align: top;
+	/*width: 1200px;*/
+	/*height: 400px;*/
+}
+
+#outputarea{
+	/*width: 1000px;*/
+	/*height: 400px;*/
+}
+#output{
+	width: 1000px;
+	height: 380px;
+	border-radius:10px 10px 10px 10px;
+	/*margin:20px;*/
+}
+#userinput{
+	width: 1000px;
+	border-radius:10px 10px 10px 10px;
+	margin-top:20px;
+}
+
+#textform{
+	/*width: 1200px;*/
+	/*height: 400px;*/
+}
+
+hr {
+	border: 2px solid rgb(181, 173, 100);
+}
+
+footer {
+	margin-top: 200px;
+}
+
+#contact {
+	text-align: center;
+	
+}
+
+#syllabify{
+	color: rgb(247, 251, 252)
+}
+
+
+
+
+
+
+
+
+
+
+
+

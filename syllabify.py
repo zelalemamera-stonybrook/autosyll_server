@@ -1,7 +1,18 @@
+'''
+The following python program is a maxmum onset principle based automatic syllabifier of english text. The algorithm takes in phone data from the provided corpus and uses this as a basis for estimating the syllable boundaries of each word. then it writes this into an output text file. 
+'''
 
-EN_VOWELS = {"AA","AE","AH", "AO","AW","AX","AXR","AY","EH","ER","EY","IH","IX","IY","OW","OY","UH","UW","UX"}
 import re
+from pathlib import Path
+import json
 
+def return_english_vowels():
+	'''
+	returns all of the licit english vowels in their arpabet, a simpler (but more niche) kind of phonetic transcription for english.
+	'''
+	EN_VOWELS = {"AA","AE","AH", "AO","AW","AX","AXR","AY","EH","ER","EY","IH","IX","IY","OW","OY","UH","UW","UX"}
+	return EN_VOWELS
+	
 def get_words_from_file(fname: str):
     '''
     Reads a wordlist file that contains one word per line and returns a list of the words
@@ -32,9 +43,9 @@ def lookup_transcriptions(wordlist: list, transcriptiondict: dict):
     return transcribed, OOVwords
         
 
-def estimate_onsets(transcriptions: dict[str:tup[str]], vowels: set[str]):
+def estimate_onsets(transcriptions: dict[str:tuple[str]], vowels: set[str]):
     '''
-    Find all the attested word-initial onsets and returns them as a list of all licit onsets according to the dataset
+    Find all the attested word-initial onsets and returns them as a set of all licit onsets according to the dataset
     '''
     licit_onsets = set()
     for pronunciation in transcriptions.values():
@@ -48,7 +59,7 @@ def estimate_onsets(transcriptions: dict[str:tup[str]], vowels: set[str]):
     return licit_onsets
 
 
-def mark_vowels(transcription: tup[str], vowels: set[str]):
+def mark_vowels(transcription: tuple[str], vowels: set[str]):
     '''
     Find the locations of each vowel in the transcription and returns it as a sequence of integers corresponding to indices of the vowels.
     '''
@@ -56,7 +67,7 @@ def mark_vowels(transcription: tup[str], vowels: set[str]):
     return indexes
 
 
-def mark_syllstarts(transcription: tup[str], nuc_indices: list[int], licit_onsets: list[str[):
+def mark_syllstarts(transcription: tuple[str], nuc_indices: list[int], licit_onsets: list[str]):
     '''
     Find the locations of the first phone of each syllable and returns it as a sequence of integers corresponding to indices of syllable starts.
     '''
@@ -107,32 +118,82 @@ def get_syllabifications(transcriptions: list[str], licit_onsets:list[str], vowe
 
 
 def write_syllables(fname: str, syllabified_dict: dict):
-    '''
-    Writes syllabifications to a file in a specific format. Each line in the output file contains a tab-separated word-syllabification pair and ends in a newline.
-    The syllabification is in ARPABET notation, but with a . inserted between syllables.
-    '''
-    with open(fname, 'w') as f:
-        for word, trans in syllabified_dict.items():
-            for i, tup in enumerate(trans):
-                joined = " ".join(tup)
-                trans[i] = joined
-            syllables = " . ".join(trans)
-            line = f"{word}\t{syllables}\n"
-            f.write(line)
-            
-def syllabify_english(wordlistfname: str, outfname: str):
-    '''
-    This function looks up transcriptions for a word list and syllabifies them
-    '''
-    vowels = EN_VOWELS # collection of vowels for English ARPABET
+	'''
+	Writes syllabifications to a file in a specific format. Each line in the output file contains a tab-separated word-syllabification pair and ends in a newline.
+	The syllabification is in ARPABET notation, but with a '.' inserted between syllables.
+	'''
+	path = Path(fname)
+	for word, trans in syllabified_dict.items():
+		for i, tup in enumerate(trans):
+			joined = " ".join(tup)
+			trans[i] = joined
+		syllables = " . ".join(trans)
+		line = f"{word}\t{syllables}\n"
+		with path.open(mode='a') as f:
+			f.write(line)
+	pipe('syllabified.txt', 'syllabified_database.txt')
+	pipe('user_input.txt', 'user_input_database.txt', add_line=True)
+	
+def pipe(f1: str, f2: str, add_line=False):
+	'''
+	pipes the contents of f1 into f2 as raw binary
+	'''	
+	with open(f'{f1}', 'rb') as file1:
+		with open(f'{f2}', 'ab') as file2:
+			if add_line:
+				file2.write(b'\n')
+				file2.write(file1.read())
+			else:
+				file2.write(file1.read())
 
-    wordlist = get_words_from_file(wordlistfname)
-    cmudict = get_transcription_dict_from_file("cmudict.dict")
-    
-    transcribed_wordlist, OOV_wordlist = lookup_transcriptions(wordlist, cmudict)
-    licit_onsets = estimate_onsets(transcribed_wordlist, vowels)
-    syllabified_dict = get_syllabifications(transcribed_wordlist, licit_onsets, vowels)
-    write_syllables(outfname, syllabified_dict)
+def write_wordlist_database(words: list[str], pth: str):
+	'''
+	appends each word in words to the file in path
+	'''	
+	path = Path(pth)
+	for word in words:
+		with path.open(mode='a') as f:
+			f.write(f'{word}\n')
+		
+def read_onset_database():
+	'''
+	reads in the json file containing the current database of licit onsets, the file is currently stored as a list of lists where each are the onsets observed so far.
+	this is read in and turned into a set for speed of look up.
+	'''   
+	path = Path('onset_database.json')
+	with path.open(mode='r') as f:
+		onset_list = json.load(f)
+	onset_tuples = [tuple(lst) for lst in onset_list]
+	return set(onset_tuples)  
+	
+def write_onset_database(licit_onsets: set[list[str]]):
+	'''
+	the database is updated every time a user requests a syllabification for a word. the valid onsets of that word are added to the set of valid accumulated onsets we have seen so far.
+	'''
+	data = list(licit_onsets)
+	path = Path('onset_database.json')
+	with path.open(mode='w') as f:
+		json.dump(data, f)
+	
+def syllabify_english(wordlistfname: str, outfname: str):
+	'''
+	This function looks up transcriptions for a word list and syllabifies them
+	'''
+	vowels = return_english_vowels()
+	wordlist = get_words_from_file(wordlistfname)
+	cmudict = get_transcription_dict_from_file("cmudict.dict")
+	transcribed_wordlist, OOV_wordlist = lookup_transcriptions(wordlist, cmudict)
+	if len(transcribed_wordlist) == 0:
+		with open('syllabified.txt', 'ab') as f:
+			f.write(b'out of vocabulary!')
+		return
+	write_wordlist_database(transcribed_wordlist, 'wordlist_database.txt')
+	licit_onset_data = read_onset_database()
+	licit_onsets = estimate_onsets(transcribed_wordlist, vowels)
+	licit_onsets = set.union(licit_onset_data, licit_onsets)
+	syllabified_dict = get_syllabifications(transcribed_wordlist, licit_onsets, vowels)
+	write_onset_database(licit_onsets)
+	write_syllables(outfname, syllabified_dict)
 
 
 

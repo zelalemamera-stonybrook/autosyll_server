@@ -9,7 +9,7 @@ import {spawn} from 'node:child_process';
 // The ip address is personal for now, and is contingent on the location of my computer
 const ip = '10.0.0.202';
 const port = 3000;
-const address =  `http://${ip}:${port}`
+const address =  `http://${ip}:${port}`;
 
 const server = createServer((request, response) => {
 	// read in the headers
@@ -17,14 +17,62 @@ const server = createServer((request, response) => {
 	console.log(`request ${method} with url ${url}`);
 	if (method === 'POST'){
 		request.setEncoding('utf8');
-		const writeStream = fs.createWriteStream('user_input.txt');
-		request.on('data', (chunk) => {
-			writeStream.write(chunk);
-		})
-		request.on('end', () => {
-			writeStream.close();
-			//spawn('python',  ['ProcessUserData.py', 'user_input.txt']);
-			})
+		 let result = spawn('touch', ['user_input.txt']);
+		 result.stdout.on('data', () => {});
+		 result.stderr.on('data', (error) => { 
+		 	console.log(`error with accessing file ${error}`);
+			response.statusCode = 500;
+			response.end();
+			return;
+			});
+		 result.on('close', (code) => {
+		 	console.log(`python process exited with code ${code}`);
+			const writeStream = fs.createWriteStream('user_input.txt');
+			request.on('data', (chunk) => {
+				console.log(`received data from client ${chunk}`);
+				writeStream.write(chunk);
+			});
+			request.on('end', () => {
+				writeStream.close();
+				result = spawn('python',  ['ProcessUserData.py']);
+				result.stdout.on('data', (data) => {
+					console.log(`python process finished ${data}`);
+				});
+				result.stderr.on('data', (data) => {
+					console.log(`Python error ${data}`);
+					response.statusCode = 500;
+					response.end();
+					return;
+				});
+				result.on('close', (code) => {
+					console.log(`python process exited with code ${code}`);
+					fs.access('syllabified.txt', (error) => {
+						if (error){
+							console.log(`error with accessing file ${error}`);
+							response.statusCode = 500;
+							response.end();
+							return;
+						};
+						});
+					const readStream = fs.createReadStream('syllabified.txt');
+					response.statusCode = 200;
+					response.setHeader('Content-Type', 'text/utf8');
+					readStream.on('data', (chunk) => {
+						response.write(chunk);
+						console.log(`chunk read from syllabified.txt and written ${chunk}`);
+					});
+					readStream.on('end', () => {
+						result = spawn('rm', ['syllabified.txt', 'wordlist.txt', 'user_input.txt']);
+						result.stdout.on('data', () => {});
+						result.stderr.on('data', (error) => { console.log(`error with writing file ${error}`); response.statusCode = 500; response.end(); return;});
+						result.on('close', (code) => {
+							console.log(`python process exited with code ${code}`);
+							response.end();
+							});
+						});
+					});
+				});
+			});
 		}
 	else if (method === 'GET'){
 		if (url === `/`){
@@ -41,6 +89,9 @@ const server = createServer((request, response) => {
 				})
 			}catch(error){
 				console.log(` error with sending the response ${error}`);
+				response.statusCode = 500;
+				response.end();
+				return;
 		}
 		}
 		else if (url === `/sidebar.html`){
@@ -56,6 +107,9 @@ const server = createServer((request, response) => {
 				})
 			}catch(error){
 				console.log(`error with sending the response ${error}`);
+				response.statusCode = 500;
+				response.end();
+				return;
 			}	
 		}
 		else if (url === '/?'){
@@ -77,6 +131,9 @@ const server = createServer((request, response) => {
 				})
 			}catch(error){
 				console.log(`error with sending the response ${error}`);
+				response.statusCode = 500;
+				response.end();
+				return;
 			}
 		}
 		else if (url === '/favicon.ico'){
@@ -93,6 +150,9 @@ const server = createServer((request, response) => {
 				})
 			}catch(error){
 				console.log(`error with sending the response ${error}`);
+				response.statusCode = 500;
+				response.end();
+				return;
 			}
 		}
 	else if (url === '/form.js'){
@@ -106,43 +166,36 @@ const server = createServer((request, response) => {
 					})
 				body.on('end', () => {
 					response.end();
-				})
+				});
 			}catch(error){
 				console.log(`error with sending the response ${error}`);
+				response.statusCode = 500;
+				response.end();
+				return;
 			}
-	}
-	else if (url ==='/syllabified.txt'){
-		request.setEncoding('utf8');
-		const writeStream = fs.createWriteStream('user_input.txt');
-		request.on('data', (chunk) => {
-			writeStream.write(chunk);
-		})
-		request.on('end', () => {
-			writeStream.close();
-			const result = spawn('python',  ['ProcessUserData.py']);
-			fs.access('syllabified.txt', (error) => {
-				if (error){
-					console.log(`error with application ${error}`);
+		}
+	else if (url === '/index.css'){
+				try{
+				const [,...path] = url;
+				const body = fs.createReadStream(path.join(""));
+				response.statusCOse = 200;
+				response.setHeader('Content-Type', 'text/css');
+				body.on('data', (chunk) => {
+					response.write(chunk);
+				});
+				body.on('end', () => {
+					response.end()
+				});
+				}catch(error){
+					console.log(`error with sending the response ${error}`);
 					response.statusCode = 500;
 					response.end();
 					return;
-					}
-			})
-			const readStream = fs.createReadStream('syllabified.txt');
-			response.statusCode = 200;
-			response.setHeader('Content-Type', 'text/plain');
-			readStream.on('data', (chunk) => {
-				response.write(chunk);
-			}
-			readStream.on('end', () => {
-				response.end();
-			}
-			})
-
-	}
-	}
-	}
-	);
+				
+				}
+			}	
+}
+});
 	
 server.listen(port, () => {
 	console.log(`Server running at ${address}`);

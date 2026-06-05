@@ -1,31 +1,39 @@
 <!DOCTYPE html>
-
 <html>
-
-<head>
-<title> Automatic Syllabifier </title>
-<script type="module" src="form.js"></script>
-</head>
-
-<body>
-<h1> Automatic Syllabification </h1>
-<div>
-<p> Words are made up of syllables, which are sequences of phonemes that "go together" in the sense that they contain a vowel center followed and/or preceded by short consonant sounds. Natural languages have their own unique syllable patterns, and these patterns are related to the set of sounds available in the language. When working with language data, especially in audio, it can be very useful to break utterances down by syllable, because syllables represent a unit of sound that is below the word level but above the phoneme level, which is useful for identifying properties of sound like stress.</p>
-<p> Syllabifying IPA transcribed text is fairly easy. Look at this <a href="https://sourceforge.net/projects/p2tk/"> link </a> for example, an automatic syllabification algorithm by Penn University based on text representation of words. Despite being an important aspect of audio analysis, the availability of an application that can automatically syllabify speech is limited. There are some algorithms that apply spectral analysis on the input audio file to identify syllable boundaries, but these require advanced mathematics to use and are not very intuitive. The hardest part usually is to obtain an alignment for the audio file and the text, then obtaining the syllabification becomes a matter of applying <a href="https://opentextbooks.rug.nl/americanenglishphonetics2/chapter/8-7-1-mop-maximum-onset-principle/"> the maximum onset principle </a>. The following application aims to gather these ideas and provide a convenient application that can automatically syllabify text <em>and</em> audio. Currently, I want to support automatic syllabification for English, German, and Arabic, but would like to add more languages in the future!</p>
-</div>
-
-<div>
-<img src="images/CloudGateStatue.png" alt="the  Cloudgate Statue landmark located in Chicago" title="Cloud Gate statue" height="576" width="576"/>
-</div>
-
-<!-- we will ask the user to input some text into a form -->
-<form action="http://10.0.0.202:3000/" method="POST"  id="text_form">
-<textarea id="textarea" name="textarea"> your text here </textarea> 
-<input id="submit" type="button" name="submit"> </input> 
-<div>
-<output id="output" name="output"> this is the output text area </output>
-</div>
-</form>
-
-</body>
+	<head>
+		<title> Automatic Syllabifier </title>
+		<link href="index.css" type="text/css" rel="stylesheet" />
+		<script type="module" src="form.js" defer="true"></script>
+	</head>
+	<body>
+		<h1> Automatic Syllabification </h1>
+		<div id="paragraphs">
+			<p> An automatic syllabifier is an algorithm that takes words and produces a linguistically correct breakdown of the word without being provided syllable information beforehand. Syllables are sequences of phonemes that "go together" in the sense that they contain a vowel center followed and/or preceded by short consonant sounds. Natural languages have their own unique syllable patterns, and these patterns are related to the set of sounds available in the language. When working with language data, especially in audio, it can be very useful to break utterances down by syllable, because syllables represent a unit of sound that is below the word level but above the phoneme level, which is useful for identifying properties of sound like stress.</p>
+			<p> Syllabifying IPA transcribed text is fairly easy. Look at this <a href="https://sourceforge.net/projects/p2tk/"> link </a> for example, an automatic syllabification algorithm by Penn University based on text representation of words. 
+				Despite being an important aspect of audio analysis, the availability of an application that can automatically syllabify speech is limited. There are some algorithms that apply spectral analysis on the input audio file to identify syllable boundaries, 
+				but these require advanced mathematics to use and are not very intuitive. The hardest part usually is to obtain an alignment for the audio file, then a syllabification can be obtained by applying <a href="https://opentextbooks.rug.nl/americanenglishphonetics2/chapter/8-7-1-mop-maximum-onset-principle/"> the maximum onset principle </a>. The following application aims to gather these ideas 
+				and provide a convenient program that can automatically syllabify text <em>and</em> audio. Currently, it can produce automatic syllabifications for English text, but I would like to add support for German text and Arabic audio in the future!</p> 
+		</div>
+		<img src="images/CloudGateStatue.png" alt="the  Cloudgate Statue landmark located in Chicago" title="Cloud Gate statue" height="576" width="576"/>
+		<div id="formarea">	
+			<!-- we will ask the user to input some text into a form -->
+			<form action="http://10.0.0.202:3000/" method="POST"  id="text_form">
+			<div id="outputarea">
+				<textarea id="output" name="output">humpty	HH AH1 M P . T IY0
+dumpty	D AH1 M P . T IY0
+sat	S AE1 T
+on	AA1 N
+a	AH0
+wall	W AO1 L</textarea>
+			</div>
+			<textarea id="userinput" name="userinput">humpty dumpty sat on a wall</textarea> 
+			<button id="submit" type="button" name="submit"><b id="syllabify">syllabify!</b></button> 
+			</form>
+		</div>
+		<footer>
+			<hr/>
+			<p id="contact"> <b>zelalem.amera@stonybrook.edu | <a href ="https://github.com/zelalemamera-stonybrook"> https://github.com/zelalemamera-stonybrook </b></a> </p>
+			<hr/>
+		</footer>
+	</body>
 </html>
