@@ -1,0 +1,21 @@
+{
+  "name": "autosyll_server",
+  "version": "1.0.0",
+  "description": "webapplication",
+  "homepage": "https://github.com/zelalemamera-stonybrook/autosyll_server#readme",
+  "bugs": {
+    "url": "https://github.com/zelalemamera-stonybrook/autosyll_server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zelalemamera-stonybrook/autosyll_server.git"
+  },
+  "license": "MIT",
+  "author": "Zelalem Amera",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "-e server.js",
+    "start": "node server.js"
+  }
+}
