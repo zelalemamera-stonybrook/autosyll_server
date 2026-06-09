@@ -21,8 +21,8 @@ a {
 	}
 	
 #submit {
-	width: 70px;
-	height: 20px;
+	width: 1000px;
+	height: 40px;
 	border-radius:50px 50px 50px 50px;
 	background-color: rgb(8, 131, 201);
 	}
@@ -32,16 +32,11 @@ a {
 	}
 
 #formarea{
-	display: inline-block;
-	vertical-align: top;
+	text-align: center;
 	/*width: 1200px;*/
 	/*height: 400px;*/
 }
 
-#outputarea{
-	/*width: 1000px;*/
-	/*height: 400px;*/
-}
 #output{
 	width: 1000px;
 	height: 380px;
@@ -50,13 +45,9 @@ a {
 }
 #userinput{
 	width: 1000px;
+	height: 80px;
 	border-radius:10px 10px 10px 10px;
-	margin-top:20px;
-}
-
-#textform{
-	/*width: 1200px;*/
-	/*height: 400px;*/
+	/*margin-top:20px;*/
 }
 
 hr {

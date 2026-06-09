@@ -9,9 +9,9 @@ const output = document.getElementById("output");
 async function syllabify( ){
 	output.value = 'processing your input ... ';
 	console.log(textarea.value);
-	const response = await fetch('syllabified.txt', {
+	const response = await fetch('http://10.0.0.202:3000/proper_syllables.txt', {
 		method: 'POST',
-		headers: {'Content-Type': 'text/utf8',},
+		headers: {'Content-Type': 'text/plain',},
 		body: textarea.value,
 	});
 	if (!response.ok){
@@ -32,7 +32,7 @@ textarea.addEventListener('click', () => {
 	textarea.value = "";
 	}, {once: true});
 output.addEventListener('click', () => {
-	const message = "humpty	HH AH1 M P . T IY0\ndumpty	D AH1 M P . T IY0\nsat	S AE1 T\non	AA1 N\na	AH0\nwall	W AO1 L";
+	const message = "HH AH0 . L OW1 | W ER1 L D";
 	console.log(message);
 	if (output.value === message ){
 		output.value = "";

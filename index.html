@@ -14,20 +14,12 @@
 				but these require advanced mathematics to use and are not very intuitive. The most important part is to obtain an alignment for the audio file if text is provided, then a syllabification can be obtained by just syllabifying the underlying text. This has the advantage of being more robust to the quirks of the sound, since mapping audio signals to phonemes is easier and a much more actively studied area of research, than mapping audio signals to syllables. The following application aims to gather these ideas 
 				and provide a convenient program that can automatically syllabify speech. Currently, it can produce automatic syllabifications for English text, but I would like to add additional support, including for German and Arabic in the future!</p> 
 		</div>
-		<img src="images/CloudGateStatue.png" alt="the  Cloudgate Statue landmark located in Chicago" title="Cloud Gate statue" height="576" width="576"/>
 		<div id="formarea">	
 			<!-- we will ask the user to input some text into a form -->
-			<form action="http://10.0.0.202:3000/" method="POST"  id="text_form">
-			<div id="outputarea">
-				<textarea id="output" name="output">humpty	HH AH1 M P . T IY0
-dumpty	D AH1 M P . T IY0
-sat	S AE1 T
-on	AA1 N
-a	AH0
-wall	W AO1 L</textarea>
-			</div>
-			<textarea id="userinput" name="userinput">humpty dumpty sat on a wall</textarea> 
-			<button id="submit" type="button" name="submit"><b id="syllabify">syllabify!</b></button> 
+			<form action="" method="POST"  id="text_form" name="text_form">
+			<textarea id="output" name="output">HH AH0 . L OW1 | W ER1 L D</textarea> <break\>
+			<textarea id="userinput" name="userinput">hello world</textarea> 
+			<button id="submit" type="button" name="submit"><b id="syllabify">transcribe</b></button> 
 			</form>
 		</div>
 		<footer>
